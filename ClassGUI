@@ -1,0 +1,713 @@
+package groupproject.mucis.datastructures;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+/**@author TeamJava
+ * @version 1.0 on 4/25/2014
+ */
+
+public class ClassGUI {
+	public ClassGUI() {
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				new GUIPanel();
+			}
+		});
+	}
+}
+class GUIPanel {
+	JMenuItem newMI, printMI, exitMI, addMI, updateMI, deleteMI, listbyidMI, listbyfnameMI, listbylnameMI, listbyemailMI, listbymajorMI,
+	listbyminorMI, listbylivingMI, aboutMI;
+	// Components for Login Screen
+	UsernameDAO nameDB;
+	ClassmatesDAO studDB;
+	JFrame loginFrame;
+	JPanel loginPanel;
+	JLabel explainLoginLbl, explainLogin2Lbl;
+	JButton submitLoginJB, newUserLoginJB, exitLoginJB;
+	JTextArea usernameLoginTA, passLoginTA;
+	JTextField usernameLoginTF;
+	JOptionPane passCorrect;
+	JPasswordField passLoginPF;
+
+	// Components for Create User Screen
+	JFrame createUserFrame;
+	JPanel createUserPanel;
+	JLabel explainCreateUserLbl;
+	JTextField createNewUserTF, createPasswordTF;
+	JButton submitNewUserJB, exitNewUserJB;
+	JLabel colZeroRowOneLbl, colOneRowOneLbl, colZeroRowTwoLbl, colOneRowTwoLbl,
+			colZeroRowThreeLbl, colTwoRowThreeLbl;
+
+	// Components for Database Screen
+	JFrame studDBFrame;
+	JPanel studDBPanel;
+	JLabel welcomeLbl;
+	JTextArea studentsTA;
+
+	public GUIPanel() {
+		studDB = new DAOSQLiteStudent();
+		nameDB = new DAOSQLiteUsername();
+		loginPanel = new JPanel();
+		loginPanel.setLayout(new GridBagLayout());
+		loginPanel.setOpaque(true);
+
+		// MAIN LOGIN FRAME
+		Font font = new Font("monospaced", Font.PLAIN, 16);
+
+		explainLoginLbl = new JLabel("Welcome to the CIS-3315 Class Database.");
+		explainLoginLbl.setFont(font);
+
+		explainLogin2Lbl = new JLabel("If you have not created a login, click 'new user' below");
+		explainLogin2Lbl.setFont(font);
+
+		// Username text field on main login frame
+		usernameLoginTF = new JTextField("Username");
+		usernameLoginTF.setPreferredSize(new Dimension(150, 22));
+		usernameLoginTF.setFont(font);
+		usernameLoginTF.setBackground(new Color(250, 250, 250));
+		usernameLoginTF.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.black));
+
+		// Password text field on main login frame
+		passLoginPF = new JPasswordField("Password");
+		passLoginPF.setPreferredSize(new Dimension(150, 22));
+		passLoginPF.setFont(font);
+		passLoginPF.setBackground(new Color(250, 250, 250));
+		passLoginPF.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.black));
+
+		// Submit login button on main frame
+		submitLoginJB = new JButton("Submit");
+		submitLoginJB.setFont(font);
+		submitLoginJB.setActionCommand("OK");
+		submitLoginJB.addActionListener(new SubmitLoginListener());
+
+		// New user button on main login frame
+		newUserLoginJB = new JButton("New User");
+		newUserLoginJB.addActionListener(new NewUserLoginListener());
+		newUserLoginJB.setFont(font);
+
+		// Exit button on main login frame
+		exitLoginJB = new JButton("Exit");
+		exitLoginJB.addActionListener(new ExitLoginListener());
+		exitLoginJB.setFont(font);
+		
+		//Text Area on studDPanel
+		studentsTA = new JTextArea(9,50);
+		studentsTA.setLineWrap(true);
+		studentsTA.setWrapStyleWord(true);
+		JScrollPane sp = new JScrollPane(studentsTA);
+		
+		//Label on studDBPanel
+		welcomeLbl = new JLabel("Welcome to the Student Database");
+		
+		// Creates main login frame
+		loginFrame = new JFrame("Class Database Login");
+		loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		loginFrame.setContentPane(loginPanel);
+		loginFrame.pack();
+		loginFrame.setSize(700, 200);
+		loginFrame.setResizable(true);
+		loginFrame.setVisible(true);
+		loginFrame.setLocationRelativeTo(null);
+
+		// Implements all JComponents to the Main login frame
+		loginPanel.add(explainLoginLbl, getConstraints(0, 0, 4, 1, "center"));
+		loginPanel.add(explainLogin2Lbl, getConstraints(0, 1, 4, 1, "center"));
+		loginPanel.add(usernameLoginTF, getConstraints(2, 2, 1, 1, "center"));
+		loginPanel.add(passLoginPF, getConstraints(3, 2, 1, 1, "left"));
+		loginPanel.add(submitLoginJB, getConstraints(1, 3, 1, 1, "left"));
+		loginPanel.add(newUserLoginJB, getConstraints(2, 3, 1, 1, "left"));
+		loginPanel.add(exitLoginJB, getConstraints(3, 3, 1, 1, "right"));
+		// END MAIN LOGIN FRAME
+		
+		//CREATES STUDDB FRAME
+		studDBPanel = new JPanel();
+		studDBPanel.setLayout(new GridBagLayout());
+		studDBPanel.setOpaque(true);
+
+		studDBFrame = new JFrame("Student's Database");
+		studDBFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		studDBFrame.setJMenuBar(createMenuBar());
+		studDBFrame.setContentPane(studDBPanel);
+		studDBFrame.setSize(750, 350);
+		studDBFrame.setResizable(true);
+		studDBFrame.setVisible(false);
+		studDBFrame.setLocationRelativeTo(null);
+		
+		String[] names = {
+			"Cody Munyon", "Dakota Brouse", "Dean Lee", "Devin Walter", "Elizabeth Clifford", "Francis King",
+			"James Gaeta", "Kevin Ryan", "Levi Seybert", "Matthew Long", "Nate Hemenway",  "Reid Parker", "Shane Whalen", 
+			"Zach Troy" 
+		};
+		
+		final JList<String> listName = new JList<String>(names);
+		JScrollPane pane = new JScrollPane(listName);
+		listName.addListSelectionListener(new ListSelectionListener() {
+		@Override
+	            public void valueChanged(ListSelectionEvent arg0) {
+            if (!arg0.getValueIsAdjusting()) {
+              studentsTA.setText(listName.getSelectedValue().toString());
+            }
+            if(listName.getSelectedValue() =="Cody Munyon"){
+            	studentsTA.setText("" + studDB.findStudentById(1));
+            }else if(listName.getSelectedValue() =="Dakota Brouse"){
+            	studentsTA.setText("" + studDB.findStudentById(2));
+            }else if(listName.getSelectedValue() =="Dean Lee"){
+            	studentsTA.setText("" + studDB.findStudentById(3));
+            }else if(listName.getSelectedValue() =="Devin Walter"){
+            	studentsTA.setText("" + studDB.findStudentById(4));
+            }else if(listName.getSelectedValue() =="Elizabeth Clifford"){
+            	studentsTA.setText("" + studDB.findStudentById(5));
+            }else if(listName.getSelectedValue() =="Francis King"){
+            	studentsTA.setText("" + studDB.findStudentById(6));
+            }else if(listName.getSelectedValue() =="James Gaeta"){
+            	studentsTA.setText("" + studDB.findStudentById(7));
+            }else if(listName.getSelectedValue() =="Kevin Ryan"){
+            	studentsTA.setText("" + studDB.findStudentById(8));
+            }else if(listName.getSelectedValue() =="Levi Seybert"){
+            	studentsTA.setText("" + studDB.findStudentById(9));
+            }else if(listName.getSelectedValue() =="Matthew Long"){
+            	studentsTA.setText("" + studDB.findStudentById(10));
+            }else if(listName.getSelectedValue() =="Nate Hemenway"){
+            	studentsTA.setText("" + studDB.findStudentById(11));
+            }else if(listName.getSelectedValue() =="Reid Parker"){
+            	studentsTA.setText("" + studDB.findStudentById(12));
+            }else if(listName.getSelectedValue() =="Shane Whalen"){
+            	studentsTA.setText("" + studDB.findStudentById(13));
+            }else{
+            	studentsTA.setText("" + studDB.findStudentById(14));
+            }
+        }
+    });
+		
+		studDBPanel.add(welcomeLbl, getConstraints(0,0,4,1, "center"));
+		studDBPanel.add(pane, getConstraints(0,1,1,1, "left"));
+		studDBPanel.add(sp, getConstraints(1,1,1,1,"right"));
+		//ENDS studDB FRAME
+		
+		// NEW USER FRAME
+		createUserPanel = new JPanel();
+		createUserPanel.setLayout(new GridBagLayout());
+		createUserPanel.setOpaque(true);
+
+		explainCreateUserLbl = new JLabel("Sign up using your Mountie Email without domain");
+		explainCreateUserLbl.setFont(font);
+
+		// Filler Labels for Spacing in GridBagLayout
+		colZeroRowOneLbl = new JLabel("                 ");
+		colOneRowOneLbl = new JLabel("                 ");
+		colZeroRowTwoLbl = new JLabel("                 ");
+		colOneRowTwoLbl = new JLabel("                 ");
+		colZeroRowThreeLbl = new JLabel("      ");
+		colTwoRowThreeLbl = new JLabel("  ");
+
+		createNewUserTF = new JTextField("Username");
+		createNewUserTF.setPreferredSize(new Dimension(150,22));
+		createNewUserTF.setFont(font);
+
+		createPasswordTF = new JPasswordField("Password");
+		createPasswordTF.setPreferredSize(new Dimension(150,22));
+		createPasswordTF.setFont(font);
+
+		submitNewUserJB = new JButton("Submit");
+		submitNewUserJB.setFont(font);
+		submitNewUserJB.setActionCommand("OK");
+		submitNewUserJB.addActionListener(new SubmitNewUserListener());
+
+		exitNewUserJB = new JButton("Go Back");
+		exitNewUserJB.setFont(font);
+		exitNewUserJB.setActionCommand("OK");
+		exitNewUserJB.addActionListener(new ExitNewUserListener());
+
+		createUserFrame = new JFrame("Create New User");
+		createUserFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		createUserFrame.setContentPane(createUserPanel);
+		createUserFrame.pack();
+		createUserFrame.setSize(700, 200);
+		createUserFrame.setResizable(true);
+		createUserFrame.setVisible(false);
+		createUserFrame.setLocationRelativeTo(null);
+
+		createUserPanel.add(explainCreateUserLbl, getConstraints(0, 0, 4, 1, "center"));
+		createUserPanel.add(colZeroRowOneLbl, getConstraints(0, 1, 1, 1, "center"));
+		createUserPanel.add(colOneRowOneLbl, getConstraints(1, 1, 1, 1, "center"));
+		createUserPanel.add(colZeroRowTwoLbl, getConstraints(0, 2, 1, 1, "center"));
+		createUserPanel.add(colOneRowTwoLbl, getConstraints(1, 2, 1, 1, "center"));
+		createUserPanel.add(colZeroRowThreeLbl, getConstraints(0, 3, 1, 1, "center"));
+		createUserPanel.add(colTwoRowThreeLbl, getConstraints(2, 3, 1, 1, "center"));
+		createUserPanel.add(createNewUserTF, getConstraints(2, 1, 1, 1, "center"));
+		createUserPanel.add(createPasswordTF, getConstraints(2, 2, 1, 1, "center"));
+		createUserPanel.add(submitNewUserJB, getConstraints(1, 3, 1, 1, "center"));
+		createUserPanel.add(exitNewUserJB, getConstraints(3, 3, 1, 1, "left"));
+
+		// END NEW USER FRAME
+
+		// CLASS ROOM LIST FRAME
+	}
+	
+	public JMenuBar createMenuBar() {
+		JMenuBar menuBar;
+		JMenu menu;
+
+		menuBar = new JMenuBar();
+
+		menu = new JMenu("File");
+		menu.setMnemonic(KeyEvent.VK_F);
+		menuBar.add(menu);
+
+		newMI = new JMenuItem("Create and Populate Database Table");
+		newMI.addActionListener(new NewListener());
+		newMI.setMnemonic(KeyEvent.VK_N);
+		newMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
+				ActionEvent.ALT_MASK));
+		menu.add(newMI);
+
+		printMI = new JMenuItem("Print...");
+		printMI.addActionListener(new PrintListener());
+		menu.add(printMI);
+
+		exitMI = new JMenuItem("Exit");
+		exitMI.addActionListener(new ExitListener());
+		menu.add(exitMI);
+
+		menu = new JMenu("Edit");
+		menu.setMnemonic(KeyEvent.VK_E);
+		menuBar.add(menu);
+
+		addMI = new JMenuItem("Add New Student");
+		addMI.addActionListener(new AddListener());
+		menu.add(addMI);
+
+		updateMI = new JMenuItem("Update a Student");
+		updateMI.addActionListener(new UpdateListener());
+		menu.add(updateMI);
+
+		deleteMI = new JMenuItem("Delete a Student");
+		deleteMI.addActionListener(new DeleteListener());
+		menu.add(deleteMI);
+
+		menu = new JMenu("Report");
+		menu.setMnemonic(KeyEvent.VK_R);
+		menuBar.add(menu);
+
+		listbyidMI = new JMenuItem("List by Id");
+		listbyidMI.setMnemonic(KeyEvent.VK_I);
+		listbyidMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I,
+				ActionEvent.ALT_MASK));
+		listbyidMI.addActionListener(new ListAllByIdListener());
+		menu.add(listbyidMI);
+
+		listbyfnameMI = new JMenuItem("List by First Name");
+		listbyfnameMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,
+				ActionEvent.CTRL_MASK));
+		listbyfnameMI.addActionListener(new ListAllByFNameListener());
+		menu.add(listbyfnameMI);
+		
+		listbylnameMI = new JMenuItem("List by Last Name");
+		listbylnameMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L,
+				ActionEvent.CTRL_MASK));
+		listbylnameMI.addActionListener(new ListAllByLNameListener());
+		menu.add(listbylnameMI);
+		
+		listbyemailMI = new JMenuItem("List by Email");
+		listbyemailMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E,
+				ActionEvent.CTRL_MASK));
+		listbyemailMI.addActionListener(new ListAllByEmailListener());
+		menu.add(listbyemailMI);
+		
+		listbymajorMI = new JMenuItem("List by Major");
+		listbymajorMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M,
+				ActionEvent.CTRL_MASK));
+		listbymajorMI.addActionListener(new ListAllByMajorListener());
+		menu.add(listbymajorMI);
+		
+		listbyminorMI = new JMenuItem("List by Minor");
+		listbyminorMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
+				ActionEvent.CTRL_MASK));
+		listbyminorMI.addActionListener(new ListAllByMinorListener());
+		menu.add(listbyminorMI);
+		
+		listbylivingMI = new JMenuItem("List by Living Option");
+		listbylivingMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
+				ActionEvent.CTRL_MASK));
+		listbylivingMI.addActionListener(new ListAllByLivingListener());
+		menu.add(listbylivingMI);
+
+		menu = new JMenu("Help");
+		menu.setMnemonic(KeyEvent.VK_H);
+		menuBar.add(menu);
+
+		aboutMI = new JMenuItem("About");
+		aboutMI.addActionListener(new AboutListener());
+		menu.add(aboutMI);
+
+		return menuBar;
+	} // end createMenuBar
+	
+	class NewListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			studDB.deleteTable();
+			studDB.createTable();
+			studDB.populateTable();
+			studentsTA.setText("New data table created and populated");
+			displayAllStudents("id");
+		}
+	}
+	
+	class PrintListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			try {
+				studentsTA.print();
+			} catch (Exception pe) {
+				studentsTA.setText("Printer error");
+			}
+		}
+	}
+	
+	class ExitListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			System.exit(0);
+		}
+	}
+	
+	class AddListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			JPanel panel = new JPanel();
+			JTextField fNameTF = new JTextField(10);
+			JTextField lNameTF = new JTextField(10);
+			JTextField emailTF = new JTextField(8);
+			JTextField majorTF = new JTextField(8);
+			JTextField minorTF = new JTextField(8);
+			JTextField livingTF = new JTextField(8);
+
+			panel.add(new JLabel("First Name:"));
+			panel.add(fNameTF);
+			panel.add(new JLabel("Last Name:"));
+			panel.add(lNameTF);
+			panel.add(new JLabel("Email:"));
+			panel.add(emailTF);
+			panel.add(new JLabel("Major:"));
+			panel.add(majorTF);
+			panel.add(new JLabel("Minor:"));
+			panel.add(minorTF);
+			panel.add(new JLabel("Living Option:"));
+			panel.add(livingTF);
+
+			int result = JOptionPane.showConfirmDialog(studDBPanel, panel,
+					"Add a New Student", JOptionPane.OK_CANCEL_OPTION);
+			
+			if(result == JOptionPane.OK_OPTION) {
+				String fName = fNameTF.getText();
+				String lName = lNameTF.getText();
+				String email = emailTF.getText();
+				String major = majorTF.getText();
+				String minor = minorTF.getText();
+				String living = livingTF.getText();
+				if(fName.length()>0 && lName.length()>0 && email.length()>0 && major.length()>0 && minor.length()>0 && living.length()>0){
+					Student s = new Student(0, fName, lName, email, major, minor, living);
+					int id = studDB.insertStudent(s);
+					studentsTA.setText("Added: " + studDB.findStudentById(id));
+					displayAllStudents("id");
+				} else {	
+					studentsTA.setText("Check Your Input");
+				}
+			} else {
+				studentsTA.setText("Add Student Canceled");
+			}
+		}
+	}
+	
+	class UpdateListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			displayAllStudents("Id");
+			String s = JOptionPane.showInputDialog(studDBPanel,
+					"Enter Student Id Number To Update: ", null);
+			if (s.length() > 0) {
+				int id = Integer.parseInt(s);
+				Student p = studDB.findStudentById(id);
+				if (p != null) {
+
+					JPanel panel = new JPanel();
+					JTextField fnameTF = new JTextField(10);
+					fnameTF.setText(p.getfName());
+					JTextField lnameTF = new JTextField(10);
+					lnameTF.setText(p.getlName());
+					JTextField emailTF = new JTextField(8);
+					emailTF.setText(p.getEmail());
+					JTextField majorTF = new JTextField(8);
+					majorTF.setText(p.getMajor());
+					JTextField  minorTF = new JTextField(8);
+					minorTF.setText(p.getMinor());
+					JTextField livingTF = new JTextField(8);
+					livingTF.setText(p.getLiving());
+					
+
+					panel.add(new JLabel("First Name:"));
+					panel.add(fnameTF);
+					panel.add(new JLabel("Last Name:"));
+					panel.add(lnameTF);
+					panel.add(new JLabel("Email:"));
+					panel.add(emailTF);
+					panel.add(new JLabel("Major:"));
+					panel.add(majorTF);
+					panel.add(new JLabel("Minor:"));
+					panel.add(minorTF);
+					panel.add(new JLabel("Living Option:"));
+					panel.add(livingTF);
+
+					int result = JOptionPane.showConfirmDialog(studDBPanel, panel,
+							"Update a Student Record", JOptionPane.OK_CANCEL_OPTION);
+
+					if (result == JOptionPane.OK_OPTION) {
+						String fName = fnameTF.getText();
+						String lName = lnameTF.getText();
+						String email = emailTF.getText();
+						String major = majorTF.getText();
+						String minor = minorTF.getText();
+						String living = livingTF.getText();
+						if (fName.length() > 0 && lName.length() > 0 && email.length() > 0 && major.length() > 0 && minor.length() > 0
+								&& living.length() > 0) {
+							p = new Student(id, fName, lName, email, major, minor, living);
+							
+							System.out.println("P:" + p);
+							studDB.updateStudent(p);
+							
+							studentsTA.setText("Updated: " + studDB.findStudentById(id));
+							displayAllStudents("Id");
+						} else {
+							studentsTA.setText("Check Your Input");
+						}
+					} else {
+						studentsTA.setText("Update Record Canceled");
+					}
+				} else {
+					studentsTA.setText("Record Id Number " + id + " Does Not Exist");
+				}
+			}
+		}
+	}
+	
+	class DeleteListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			String s = JOptionPane.showInputDialog(studDBPanel,
+					"Enter Student Id To Delete: ", null);
+			if (s != null && s.length() > 0) {
+				int id = Integer.parseInt(s);
+				studDB.deleteStudent(id);
+				studentsTA.setText("Student " + id + " Has Been Deleted.");
+				displayAllStudents("id");
+			} else {
+				studentsTA.setText("**** Student not deleted ****");
+			}
+		}
+	}
+	
+	class ListAllByIdListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			studentsTA.setText("List All Students By Id");
+			displayAllStudents("id");
+		}
+	}
+	
+	class ListAllByFNameListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			studentsTA.setText("List All Students By First Name");
+			displayAllStudents("fName");
+		}
+	}
+	
+	class ListAllByLNameListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			studentsTA.setText("List All Students By Last Name");
+			displayAllStudents("lName");
+		}
+	}
+	
+	class ListAllByEmailListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			studentsTA.setText("List All Students By Email");
+			displayAllStudents("email");
+		}
+	}
+	
+	class ListAllByMajorListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			studentsTA.setText("List All Students By Major");
+			displayAllStudents("major");
+		}
+	}
+	
+	class ListAllByMinorListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			studentsTA.setText("List All Students By Minor");
+			displayAllStudents("minor");
+		}
+	}
+	
+	class ListAllByLivingListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			studentsTA.setText("List All Students By Living Option");
+			displayAllStudents("living");
+		}
+	}
+	
+	class AboutListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			studentsTA.setText("All Systems Go");
+			JOptionPane.showMessageDialog(studDBPanel,
+					"ClassGUI created by TeamJava on 2014.04.25", "About",
+					JOptionPane.INFORMATION_MESSAGE);
+		}
+	}
+	
+	public void displayAllStudents(String sortField) {
+		StringBuffer sb = new StringBuffer();
+		for (Student s : studDB.retrieveAllStudents(sortField)) {
+			sb.append(s.toString() + "\n");
+		}
+		studentsTA.setText(sb.toString());
+	}
+
+	public void displayAllStudents(List<Student> list) {
+		StringBuilder sb = new StringBuilder();
+		for (Student s : list) {
+			sb.append(s.toString() + "\n");
+		}
+		studentsTA.setText(sb.toString());
+	}
+
+	class SubmitLoginListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			
+			/*String userName = usernameLoginTF.getText();
+			String password = passLoginPF.getText();
+			if(userName.length() > 0 && password.length() > 0){
+				if(userName == nameDB.getUserName() && password == nameDB.getPassword()){
+					loginFrame.dispose();
+					studDBFrame.setVisible(true);
+				}
+			}*/
+
+			// Processing the password
+			String cmd = e.getActionCommand();
+			if ("OK".equals(cmd)) {
+				char[] input = passLoginPF.getPassword();
+				if (isPasswordCorrect(input)) {
+					// JOptionPane.showMessageDialog(loginFrame,
+					// "Success! You typed the right password.");
+					loginFrame.dispose();
+					studDBFrame.setVisible(true);
+				} else {
+					JOptionPane.showMessageDialog(loginFrame, "Invalid password. Try again.",
+							"Error Message", JOptionPane.ERROR_MESSAGE);
+				}
+
+				// Zero out the possible password, for security.
+				Arrays.fill(input, '0');
+
+				passLoginPF.selectAll();
+				// resetFocus();
+			}
+		}
+
+		// Checking if password is correct
+		private boolean isPasswordCorrect(char[] input) {
+			boolean isCorrect = true;
+			char[] correctPassword = { 'b', 'u', 'g', 'a', 'b', 'o', 'o' };
+
+			if (input.length != correctPassword.length) {
+				isCorrect = false;
+			} else {
+				isCorrect = Arrays.equals(input, correctPassword);
+			}
+
+			// Zero out the password.
+			Arrays.fill(correctPassword, '0');
+
+			return isCorrect;
+		}
+	}
+
+	class ExitLoginListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			loginFrame.dispose();
+		}
+	}
+
+	class NewUserLoginListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			createUserFrame.setVisible(true);
+			loginFrame.dispose();
+		}
+	}
+
+	class SubmitNewUserListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			JPanel panel = new JPanel();
+			//createUserFrame.dispose();
+			String userName = createNewUserTF.getText();
+			String password = createPasswordTF.getText();
+			if(userName.length() > 0 && password.length() > 0){
+				Username n = new Username(0, userName, password);
+				System.out.println("Names" + n);
+				nameDB.insertName(n);
+			}
+			JOptionPane.showMessageDialog(panel, "Add Succesful",
+					"Bingo", JOptionPane.INFORMATION_MESSAGE);
+		}
+	}
+
+	class ExitNewUserListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			createUserFrame.dispose();
+			loginFrame.setVisible(true);
+		}
+	}
+
+	private GridBagConstraints getConstraints(int gridx, int gridy, int gridwidth, int gridheight,
+			String justify) {
+		GridBagConstraints c = new GridBagConstraints();
+		c.insets = new Insets(5, 5, 5, 5);
+		c.ipadx = 0;
+		c.ipady = 0;
+		c.gridx = gridx;
+		c.gridy = gridy;
+		c.gridwidth = gridwidth;
+		c.gridheight = gridheight;
+		if (justify.equalsIgnoreCase("left")) {
+			c.anchor = GridBagConstraints.WEST;
+		} else if (justify.equalsIgnoreCase("right")) {
+			c.anchor = GridBagConstraints.EAST;
+		} else if (justify.equalsIgnoreCase("Center")) {
+			c.anchor = GridBagConstraints.CENTER;
+		}
+		return c;
+	}
+}

@@ -1,0 +1,151 @@
+package groupproject.mucis.datastructures;
+import groupproject.util.Validator;
+
+import java.util.List;
+import java.util.Scanner;
+
+/**@author TeamJava
+ * @version 1.0 on 4/25/2014
+ */
+
+public class UsernameApp {
+
+	Scanner sc = new Scanner(System.in);
+	UsernameDAO nameDB;
+
+	public UsernameApp() {
+		nameDB = new DAOSQLiteUsername();
+		menu();
+	}
+
+	public void menu() {
+		final String MY_MENU = "\n***** INVENTORY MENU *****\n" + "0 = Quit\n"
+				+ "1 = List all by Id\n" + "2 = List all by First Name\n"
+				+ "3 = List all by Last Name\n" + "4 = List all by Email\n"
+				+ "5 = List all by Major\n" + "6 = List all by Minor\n"
+				+ "7 = List all by Living\n" + "11 = Find by Id\n" + "71 = Add Student\n"
+				+ "81 = Update Student\n" + "82 = Update Student First Name\n"
+				+ "83 = Update Student Last Name\n" + "84 = Update Student Email\n"
+				+ "85 = Update Student Major\n" + "86 = Update Student Minor\n"
+				+ "87 = Update Student Living Option\n" + "91 = Delete Student\n"
+				+ "101 = Create New Table\n" + "102 = Populate New Table\n"
+				+ "Enter number of choice: ";
+		int choice = 0;
+		while (true) {
+			choice = Validator.getInt(sc, MY_MENU);
+			System.out.println();
+			if (choice == 0)
+				break;
+			else if (choice == 1)
+				displayAll("id");
+			else if (choice == 2)
+				displayAll("firstName");
+			else if (choice == 3)
+				displayAll("lastName");
+			else if (choice == 11)
+				find();
+			else if (choice == 71)
+				addNames();
+			else if (choice == 81)
+				updateStudent();
+			else if (choice == 91)
+				deleteStudent();
+			else if (choice == 101)
+				deleteTable();
+			else if (choice == 102)
+				nameDB.populateTable();
+			else
+				System.out.println("Invalid Choice. Please Try Again.");
+		}
+	}
+
+	public void updateStudent() {
+		int id = Validator.getInt(sc, "Enter Id of Student to Update: ");
+		Username s = nameDB.findNameById(id);
+		if (s != null) {
+			System.out.println("Updating: " + s);
+			String firstName = Validator.getLine(sc, "Enter Students First Name: ");
+			String lastName = Validator.getLine(sc, "Enter Students Last Name: ");
+			s = new Username(id, firstName, lastName);
+			String choice = Validator.getLine(sc, "Update student (y/n): ");
+			if (choice.equalsIgnoreCase("y")) {
+				nameDB.updateNames(s);
+				System.out.println("The Following Student Has Been Updated: ");
+				System.out.println(nameDB.findNameById(id) + "\n");
+			} else {
+				System.out.println("The Student Has Not Been Updated.");
+			}
+		} else {
+			System.out.println("The Student Was Not Found For Id " + id);
+		}
+	}
+
+	public void addNames() {
+		String firstName = Validator.getLine(sc, "Enter Student's First Name: ");
+		String lastName = Validator.getLine(sc, "Enter Student's Last Name: ");
+		Username s = new Username(0, firstName, lastName);
+		String choice = Validator.getLine(sc, "Add This Student (y/n): ");
+		if (choice.equalsIgnoreCase("y")) {
+			int id = nameDB.insertName(s);
+			if (id > 0) {
+				System.out.println("The Following Student Has Been Added: \n");
+				System.out.println(nameDB.findNameById(id) + "\n");
+			} else {
+				System.out.println("****Error****: The Student Was Not Added.");
+			}
+		}
+	}
+
+	public void deleteStudent() {
+		int id = Validator.getInt(sc, "Enter Id of Student to Delete: ");
+		Username s = nameDB.findNameById(id);
+		if (s != null) {
+			System.out.println("Student found: " + s);
+			String choice = Validator.getLine(sc, "Delete (y/n): ");
+			if (choice.equalsIgnoreCase("y")) {
+				nameDB.deleteNames(id);
+				System.out.println("Deleted Student Id " + id);
+			} else {
+				System.out.println("The Student Was Not Deleted.");
+			}
+		} else {
+			System.out.println("The Student Was Not Found for Id " + id);
+		}
+	}
+
+	public void find() {
+		int id = Validator.getInt(sc, "Enter Name Id: ");
+		Username s = nameDB.findNameById(id);
+		if (s != null)
+			System.out.println("\n" + s);
+		else
+			System.out.println("The Student Was Not Found for Id " + id);
+	}
+
+	public void displayAll(String columnName) {
+		List<Username> list = nameDB.retrieveAllNames(columnName);
+		System.out.println("Id   userName   Password");
+		for (Username s : list) {
+			System.out.println(s);
+		}
+		Validator.getLine(sc, "\nPress Enter to Continue...");
+	}
+
+	public void deleteTable() {
+		String choice = Validator.getLine(sc, "Delete Entire Student Table (y/n)? ");
+		if (choice.equalsIgnoreCase("y")) {
+			choice = Validator.getLine(sc, "Administrator Password: ");
+			if (choice.equals("teamJava")) {
+				nameDB.deleteTable();
+				nameDB.createTable();
+			} else {
+				System.out.println("Incorrect Password.");
+			}
+		}
+	}
+
+	public static void main(String[] args) {
+		new UsernameApp();
+		System.out.println("Goodbye from TeamJava");
+	}
+}

@@ -1,0 +1,208 @@
+package groupproject.mucis.datastructures;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author TeamJava
+ * @version 1.0 on 4/9/2014
+ */
+
+public abstract class AbstractStudentDAO implements ClassmatesDAO {
+	private static String DRIVER = "";
+	private static String URL = "";
+
+	public AbstractStudentDAO(String driver, String url) {
+		try {
+			DRIVER = driver;
+			URL = url;
+			Class.forName(DRIVER);
+			createTable();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return;
+		}
+	}
+
+	protected void myUpdate(String q) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DriverManager.getConnection(URL);
+			ps = conn.prepareStatement(q);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("myUpdate SQL exception " + e.getMessage());
+			System.out.println("\nQuery: " + ps.toString());
+			e.printStackTrace();
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public abstract void createTable();
+
+	public abstract int insertStudent(Student s);
+
+	public void deleteTable() {
+		myUpdate("drop table if exists students");
+	}
+
+	public void populateTable() {
+		myUpdate("insert into students values (null, 'Cody', 'Munyon', 'munyoncj14',"
+				+ " 'CS', ' ', 'Off Campus')");
+		myUpdate("insert into students values (null, 'Dakota', 'Brouse', 'gaetajp28',"
+				+ " 'CS/Math', ' ', 'On Campus')");
+	}
+
+	@Override
+	public Student findStudentById(int id) {
+		String q = "select id, fName, lName, email, major, minor, living from students where id = ?";		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Student s = null;
+		try {
+			conn = DriverManager.getConnection(URL);
+			ps = conn.prepareStatement(q);
+			ps.setInt(1, id);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				s = new Student(rs.getInt("id"), rs.getString("fName"), rs.getString("lName"),
+						rs.getString("email"), rs.getString("major"), rs.getString("minor"),
+						rs.getString("living"));
+			}
+		} catch (SQLException e) {
+			System.out.println("findStudentById SQL exception " + e.getMessage());
+
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return s;
+	}
+
+	@Override
+	public List<Student> retrieveAllStudents(String columnName) {
+		String q = "select id, fName, lName, email, major, minor, living from students order by ";
+		if (columnName.equalsIgnoreCase("id"))
+			q += "id";
+		else if (columnName.equalsIgnoreCase("fName"))
+			q += "fName";
+		else if (columnName.equalsIgnoreCase("lName"))
+			q += "lName";
+		else if (columnName.equalsIgnoreCase("email"))
+			q += "email";
+		else if (columnName.equalsIgnoreCase("major"))
+			q += "major";
+		else if (columnName.equalsIgnoreCase("minor"))
+			q += "minor";
+		else
+			q += "living";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Student> list = new ArrayList<Student>();
+		try {
+			conn = DriverManager.getConnection(URL);
+			ps = conn.prepareStatement(q);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				list.add(new Student(rs.getInt("id"), rs.getString("fName"), rs.getString("lName"),
+						rs.getString("email"), rs.getString("major"), rs.getString("minor"), rs
+								.getString("living")));
+			}
+		} catch (SQLException e) {
+			System.out.println("retrieveAllStudents SQL exception " + e.getMessage());
+			System.out.println("\nQuery: " + ps.toString());
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return list;
+	}
+	
+	@Override
+	public void deleteStudent(int id) {
+		String q = "delete from students where id = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DriverManager.getConnection(URL);
+			ps = conn.prepareStatement(q);
+			ps.setInt(1, id);
+			ps.executeUpdate();
+		} catch (SQLException ex) {
+			System.out.println("deleteStudent SQLException: " + ex.getMessage());
+			System.out.println("\nQuery: " + ps.toString());
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public void updateStudent(Student s) {
+		String q = "update students set fName = ?, lName = ?, email = ?, major = ?, minor = ?, living = ? where id = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DriverManager.getConnection(URL);
+			ps = conn.prepareStatement(q);
+			ps.setString(1, s.getfName());
+			ps.setString(2, s.getlName());
+			ps.setString(3, s.getEmail());
+			ps.setString(4, s.getMajor());
+			ps.setString(5, s.getMinor());
+			ps.setString(6, s.getLiving());
+			ps.setInt(7, s.getId());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("insertStudent SQL exception " + e.getMessage());
+			System.out.println("\nQuery: " + ps.toString());
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+}

@@ -1,0 +1,27 @@
+package groupproject.mucis.datastructures;
+
+/** @author TeamJava
+ *  @version 1.0 on 4/9/2014
+ */
+
+import java.util.List;
+
+public interface ClassmatesDAO {
+	
+	public void createTable();
+
+	public void deleteTable();
+
+	public void populateTable();
+
+	public List<Student> retrieveAllStudents(String columnName);
+	
+	public Student findStudentById(int id);
+
+	public int insertStudent(Student s);
+	
+	public void updateStudent(Student s);
+
+	public void deleteStudent(int id);
+}
+

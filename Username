@@ -1,0 +1,44 @@
+package groupproject.mucis.datastructures;
+
+/**@author TeamJava
+ * @version 1.0 on 4/25/2014
+ */
+
+public class Username {
+	private int id;
+	private String userName, password;
+	
+	public Username(int id, String userName, String password) {
+		this.id = id;
+		this.userName = userName;
+		this.password = password;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	public String toString(){
+		return(id + userName + password);
+	}
+}

@@ -1,0 +1,189 @@
+package groupproject.mucis.datastructures;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author TeamJava
+ * @version 1.0 on 4/9/2014
+ */
+
+public abstract class AbstractUsernameDAO implements UsernameDAO {
+	private static String DRIVER = "";
+	private static String URL = "";
+
+	public AbstractUsernameDAO(String driver, String url) {
+		try {
+			DRIVER = driver;
+			URL = url;
+			Class.forName(DRIVER);
+			createTable();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return;
+		}
+	}
+
+	protected void myUpdate(String q) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DriverManager.getConnection(URL);
+			ps = conn.prepareStatement(q);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("myUpdate SQL exception " + e.getMessage());
+			System.out.println("\nQuery: " + ps.toString());
+			e.printStackTrace();
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public abstract void createTable();
+
+	public abstract int insertName(Username n);
+
+	public void deleteTable() {
+		myUpdate("drop table if exists names");
+	}
+
+	public void populateTable() {
+		myUpdate("insert into names values (null, 'ryank15', 'ryan')");
+		myUpdate("insert into names values (null, 'gaetajp28', 'gaeta')");
+	}
+
+	@Override
+	public Username findNameById(int id) {
+		String q = "select id, userName, password from names where id = ?";		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Username s = null;
+		try {
+			conn = DriverManager.getConnection(URL);
+			ps = conn.prepareStatement(q);
+			ps.setInt(1, id);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				s = new Username(rs.getInt("id"), rs.getString("userName"), rs.getString("password"));
+			}
+		} catch (SQLException e) {
+			System.out.println("findStudentById SQL exception " + e.getMessage());
+
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return s;
+	}
+
+	@Override
+	public List<Username> retrieveAllNames(String columnName) {
+		String q = "select id, userName, password from names order by ";
+		if (columnName.equalsIgnoreCase("id"))
+			q += "id";
+		else if (columnName.equalsIgnoreCase("userName"))
+			q += "userName";
+		else
+			q += "password";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Username> list = new ArrayList<Username>();
+		try {
+			conn = DriverManager.getConnection(URL);
+			ps = conn.prepareStatement(q);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				list.add(new Username(rs.getInt("id"), rs.getString("userName"), rs.getString("password")));
+			}
+		} catch (SQLException e) {
+			System.out.println("retrieveAllStudents SQL exception " + e.getMessage());
+			System.out.println("\nQuery: " + ps.toString());
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return list;
+	}
+	
+	@Override
+	public void deleteNames(int id) {
+		String q = "delete from names where id = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DriverManager.getConnection(URL);
+			ps = conn.prepareStatement(q);
+			ps.setInt(1, id);
+			ps.executeUpdate();
+		} catch (SQLException ex) {
+			System.out.println("deleteStudent SQLException: " + ex.getMessage());
+			System.out.println("\nQuery: " + ps.toString());
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public void updateNames(Username n) {
+		String q = "update names set userName = ?, password = ? where id = ?";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = DriverManager.getConnection(URL);
+			ps = conn.prepareStatement(q);
+			ps.setString(1, n.getUserName());
+			ps.setString(2, n.getPassword());
+			ps.setInt(7, n.getId());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("insertStudent SQL exception " + e.getMessage());
+			System.out.println("\nQuery: " + ps.toString());
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+}

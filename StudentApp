@@ -1,0 +1,302 @@
+package groupproject.mucis.datastructures;
+
+import java.util.List;
+import java.util.Scanner;
+
+import groupproject.util.Validator;
+
+/**
+ * @author TeamJava
+ * @version 1.0 on 4/9/2014
+ */
+
+public class StudentApp {
+
+	Scanner sc = new Scanner(System.in);
+	ClassmatesDAO studDB;
+
+	public StudentApp() {
+		studDB = new DAOSQLiteStudent();
+		menu();
+	}
+
+	public void menu() {
+		final String MY_MENU = "\n***** INVENTORY MENU *****\n" + "0 = Quit\n"
+				+ "1 = List all by Id\n" + "2 = List all by First Name\n"
+				+ "3 = List all by Last Name\n" + "4 = List all by Email\n"
+				+ "5 = List all by Major\n" + "6 = List all by Minor\n"
+				+ "7 = List all by Living\n" + "11 = Find by Id\n" + "71 = Add Student\n"
+				+ "81 = Update Student\n" + "82 = Update Student First Name\n"
+				+ "83 = Update Student Last Name\n" + "84 = Update Student Email\n"
+				+ "85 = Update Student Major\n" + "86 = Update Student Minor\n"
+				+ "87 = Update Student Living Option\n" + "91 = Delete Student\n"
+				+ "101 = Create New Table\n" + "102 = Populate New Table\n"
+				+ "Enter number of choice: ";
+		int choice = 0;
+		while (true) {
+			choice = Validator.getInt(sc, MY_MENU);
+			System.out.println();
+			if (choice == 0)
+				break;
+			else if (choice == 1)
+				displayAll("id");
+			else if (choice == 2)
+				displayAll("fName");
+			else if (choice == 3)
+				displayAll("lName");
+			else if (choice == 4)
+				displayAll("email");
+			else if (choice == 5)
+				displayAll("major");
+			else if (choice == 6)
+				displayAll("minor");
+			else if (choice == 7)
+				displayAll("living");
+			else if (choice == 11)
+				find();
+			else if (choice == 71)
+				addStudent();
+			else if (choice == 81)
+				updateStudent();
+			else if (choice == 82)
+				updateStudentFirstName();
+			else if (choice == 83)
+				updateStudentLastName();
+			else if (choice == 84)
+				updateStudentEmail();
+			else if (choice == 85)
+				updateStudentMajor();
+			else if (choice == 86)
+				updateStudentMinor();
+			else if (choice == 87)
+				updateStudentLiving();
+			else if (choice == 91)
+				deleteStudent();
+			else if (choice == 101)
+				deleteTable();
+			else if (choice == 102)
+				studDB.populateTable();
+			else
+				System.out.println("Invalid Choice. Please Try Again.");
+		}
+	}
+
+	private void updateStudentLiving() {
+		int id = Validator.getInt(sc, "Enter Id of Student to Update: ");
+		Student s = studDB.findStudentById(id);
+		if (s != null) {
+			System.out.println("Updating: " + s);
+			String living = Validator.getLine(sc, "Enter Students Living Option: ");
+			s = new Student(id, s.getfName(), s.getlName(), s.getEmail(), s.getMajor(), s.getMinor(), living);
+			String choice = Validator.getLine(sc, "Update student (y/n): ");
+			if (choice.equalsIgnoreCase("y")) {
+				studDB.updateStudent(s);
+				System.out.println("The Following Student Has Been Updated: ");
+				System.out.println(studDB.findStudentById(id) + "\n");
+			} else {
+				System.out.println("The Student Was Not Updated.");
+			}
+		} else {
+			System.out.println("The Student Was Not Found For Id " + id);
+		}
+	}
+
+	private void updateStudentMinor() {
+		int id = Validator.getInt(sc, "Enter Id of Student to Update: ");
+		Student s = studDB.findStudentById(id);
+		if (s != null) {
+			System.out.println("Updating: " + s);
+			String minor = Validator.getLine(sc, "Enter Students Minor: ");
+			s = new Student(id, s.getfName(), s.getlName(), s.getEmail(), s.getMajor(), minor, s.getLiving());
+			String choice = Validator.getLine(sc, "Update student (y/n): ");
+			if (choice.equalsIgnoreCase("y")) {
+				studDB.updateStudent(s);
+				System.out.println("The Following Student Has Been Updated: ");
+				System.out.println(studDB.findStudentById(id) + "\n");
+			} else {
+				System.out.println("The Student Was Not Updated.");
+			}
+		} else {
+			System.out.println("The Student Was Not Found For Id " + id);
+		}
+	}
+
+	private void updateStudentMajor() {
+		int id = Validator.getInt(sc, "Enter Id of Student to Update: ");
+		Student s = studDB.findStudentById(id);
+		if (s != null) {
+			System.out.println("Updating: " + s);
+			String major = Validator.getLine(sc, "Enter Students Major: ");
+			s = new Student(id, s.getfName(), s.getlName(), s.getEmail(), major, s.getMinor(), s.getLiving());
+			String choice = Validator.getLine(sc, "Update student (y/n): ");
+			if (choice.equalsIgnoreCase("y")) {
+				studDB.updateStudent(s);
+				System.out.println("The Following Student Has Been Updated: ");
+				System.out.println(studDB.findStudentById(id) + "\n");
+			} else {
+				System.out.println("The Student Was Not Updated.");
+			}
+		} else {
+			System.out.println("The Student Was Not Found For Id " + id);
+		}
+	}
+
+	private void updateStudentEmail() {
+		int id = Validator.getInt(sc, "Enter Id of Student to Update: ");
+		Student s = studDB.findStudentById(id);
+		if (s != null) {
+			System.out.println("Updating: " + s);
+			String email = Validator.getLine(sc, "Enter Students Email: ");
+			s = new Student(id, s.getfName(), s.getlName(), email, s.getMajor(), s.getMinor(), s.getLiving());
+			String choice = Validator.getLine(sc, "Update student (y/n): ");
+			if (choice.equalsIgnoreCase("y")) {
+				studDB.updateStudent(s);
+				System.out.println("The Following Student Has Been Updated: ");
+				System.out.println(studDB.findStudentById(id) + "\n");
+			} else {
+				System.out.println("The Student Was Not Updated.");
+			}
+		} else {
+			System.out.println("The Student Was Not Found For Id " + id);
+		}
+	}
+
+	private void updateStudentLastName() {
+		int id = Validator.getInt(sc, "Enter Id of Student to Update: ");
+		Student s = studDB.findStudentById(id);
+		if (s != null) {
+			System.out.println("Updating: " + s);
+			String lName = Validator.getLine(sc, "Enter Students Last Name: ");
+			s = new Student(id, s.getfName(), lName, s.getEmail(), s.getMajor(), s.getMinor(), s.getLiving());
+			String choice = Validator.getLine(sc, "Update student (y/n): ");
+			if (choice.equalsIgnoreCase("y")) {
+				studDB.updateStudent(s);
+				System.out.println("The Following Student Has Been Updated: ");
+				System.out.println(studDB.findStudentById(id) + "\n");
+			} else {
+				System.out.println("The Student Was Not Updated.");
+			}
+		} else {
+			System.out.println("The Student Was Not Found For Id " + id);
+		}
+	}
+
+	private void updateStudentFirstName() {
+		int id = Validator.getInt(sc, "Enter Id of Student to Update: ");
+		Student s = studDB.findStudentById(id);
+		if (s != null) {
+			System.out.println("Updating: " + s);
+			String fName = Validator.getLine(sc, "Enter Students First Name: ");
+			s = new Student(id, fName, s.getlName(), s.getEmail(), s.getMajor(), s.getMinor(), s.getLiving());
+			String choice = Validator.getLine(sc, "Update student (y/n): ");
+			if (choice.equalsIgnoreCase("y")) {
+				studDB.updateStudent(s);
+				System.out.println("The Following Student Has Been Updated: ");
+				System.out.println(studDB.findStudentById(id) + "\n");
+			} else {
+				System.out.println("The Student Was Not Updated.");
+			}
+		} else {
+			System.out.println("The Student Was Not Found For Id " + id);
+		}
+	}
+	
+	public void updateStudent() {
+		int id = Validator.getInt(sc, "Enter Id of Student to Update: ");
+		Student s = studDB.findStudentById(id);
+		if (s != null) {
+			System.out.println("Updating: " + s);
+			String fName = Validator.getLine(sc, "Enter Students First Name: ");
+			String lName = Validator.getLine(sc, "Enter Students Last Name: ");
+			String email = Validator.getLine(sc, "Enter Students Email: ");
+			String major = Validator.getLine(sc, "Enter Students Major: ");
+			String minor = Validator.getLine(sc, "Enter Students Minor: ");
+			String living = Validator.getLine(sc, "Enter Students Living Option: ");
+			s = new Student(id, fName, lName, email, major, minor, living);
+			String choice = Validator.getLine(sc, "Update student (y/n): ");
+			if (choice.equalsIgnoreCase("y")) {
+				studDB.updateStudent(s);
+				System.out.println("The Following Student Has Been Updated: ");
+				System.out.println(studDB.findStudentById(id) + "\n");
+			} else {
+				System.out.println("The Student Has Not Been Updated.");
+			}
+		} else {
+			System.out.println("The Student Was Not Found For Id " + id);
+		}
+	}
+
+	public void addStudent() {
+		String fName = Validator.getLine(sc, "Enter Student's First Name: ");
+		String lName = Validator.getLine(sc, "Enter Student's Last Name: ");
+		String email = Validator.getLine(sc, "Enter Student's Email: ");
+		String major = Validator.getLine(sc, "Enter Student's Major: ");
+		String minor = Validator.getLine(sc, "Enter Student's Minor: ");
+		String living = Validator.getLine(sc, "Enter Student's Living Option: ");
+		Student s = new Student(0, fName, lName, email, major, minor, living);
+		String choice = Validator.getLine(sc, "Add This Student (y/n): ");
+		if (choice.equalsIgnoreCase("y")) {
+			int id = studDB.insertStudent(s);
+			if (id > 0) {
+				System.out.println("The Following Student Has Been Added: \n");
+				System.out.println(studDB.findStudentById(id) + "\n");
+			} else {
+				System.out.println("****Error****: The Student Was Not Added.");
+			}
+		}
+	}
+
+	public void deleteStudent() {
+		int id = Validator.getInt(sc, "Enter Id of Student to Delete: ");
+		Student s = studDB.findStudentById(id);
+		if (s != null) {
+			System.out.println("Student found: " + s);
+			String choice = Validator.getLine(sc, "Delete (y/n): ");
+			if (choice.equalsIgnoreCase("y")) {
+				studDB.deleteStudent(id);
+				System.out.println("Deleted Student Id " + id);
+			} else {
+				System.out.println("The Student Was Not Deleted.");
+			}
+		} else {
+			System.out.println("The Student Was Not Found for Id " + id);
+		}
+	}
+
+	public void find() {
+		int id = Validator.getInt(sc, "Enter Student Id: ");
+		Student s = studDB.findStudentById(id);
+		if (s != null)
+			System.out.println("\n" + s);
+		else
+			System.out.println("The Student Was Not Found for Id " + id);
+	}
+
+	public void displayAll(String columnName) {
+		List<Student> list = studDB.retrieveAllStudents(columnName);
+		System.out.println("Id   First Name   Last Name   Email(@mounties.mansfield.edu)   Major                Minor                "
+				+ "Living Option\n");
+		for (Student s : list) {
+			System.out.println(s);
+		}
+		Validator.getLine(sc, "\nPress Enter to Continue...");
+	}
+
+	public void deleteTable() {
+		String choice = Validator.getLine(sc, "Delete Entire Student Table (y/n)? ");
+		if (choice.equalsIgnoreCase("y")) {
+			choice = Validator.getLine(sc, "Administrator Password: ");
+			if (choice.equals("teamJava")) {
+				studDB.deleteTable();
+				studDB.createTable();
+			} else {
+				System.out.println("Incorrect Password.");
+			}
+		}
+	}
+
+	public static void main(String[] args) {
+		new StudentApp();
+		System.out.println("Goodbye from TeamJava");
+	}
+}

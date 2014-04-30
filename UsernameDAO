@@ -1,0 +1,29 @@
+package groupproject.mucis.datastructures;
+import java.util.List;
+
+/**@author TeamJava
+ * @version 1.0 on 4/25/2014
+ */
+
+public interface UsernameDAO {
+	
+	public void createTable();
+	
+	public void deleteTable();
+	 
+	public void populateTable();
+
+	public Username findNameById(int id);
+
+	public List<Username> retrieveAllNames(String columnName);
+
+	public void deleteNames(int id);
+
+	public void updateNames(Username n);
+
+	public int insertName(Username n);
+
+	public String getUserName();
+	
+	public String getPassword();
+}
